@@ -1,123 +1,196 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
-class person 
+
+namespace TestProperties
 {
-    
-    string _firstname;
-    string _lastname;
-    string _email;
-    DateTime _dateofbirth;
-
-    public string firstname
+   class Person
     {
-        get { return _firstname; }
-        set { _firstname = value; }
-    }
+        private String FirstName;
+        private string LastName;
+        private string Email;
+        private DateTime Dob;
 
-    public string lastname
-    {
-        get { return _lastname; }
-        set { _lastname = value; }
-    }
-
-    public string email
-    {
-        get { return _email; }
-        set
+        public string SetfirstName
         {
-            string[] items = value.Split('@'); 
-            if (items.Length != 2) 
+            get
             {
-                throw new ArgumentException("Invalid email address");
+                return FirstName;
             }
-            _email = value;
-        }
-    }
-
-    public DateTime dateofbirth
-    {
-        get { return _dateofbirth; }
-        set
-        {
-            if (value > DateTime.Today) 
+            set
             {
-                throw new ArgumentException("Date of birth can't be in the future");
+                FirstName = value;
             }
-            _dateofbirth = value;
+        }
+        public string SetLastName
+        {
+            get
+            {
+                return LastName;
+            }
+            set
+            {
+                LastName = value;
+            }
+        }
+
+
+        public string SetEmail
+        {
+            set
+            {
+                Email = value;
+            }
+        }
+        public DateTime SetDob
+        {
+            set
+            {
+                Dob = value;
+            }
+        }
+        public Person(String First, String Last, String email, DateTime DOfB)
+        {
+            FirstName = First;
+            LastName = Last;
+            Email = email;
+            Dob = DOfB;
+        }
+
+        public Person(String First, String Last, String email)
+        {
+            FirstName = First;
+            LastName = Last;
+            Email = email;
+        }
+
+        public Person(String First, String Last, DateTime DOfB)
+        {
+            FirstName = First;
+            LastName = Last;
+            Dob = DOfB;
+        }
+
+        public int age(DateTime dtDOB)
+        {
+            TimeSpan ts = DateTime.Now.Subtract(dtDOB);
+            int years = ts.Days / 365;
+            return years;
+
+        }
+
+        public string ZodiacSign(DateTime DateOfBirth)
+        {
+            string returnString = string.Empty;
+            string[] dateAndMonth = DateOfBirth.ToLongDateString().Split(new char[] { ',' });
+            string[] ckhString = dateAndMonth[1].ToString().Split(new char[] { ' ' });
+            if (ckhString[1].ToString() == "March")
+            {
+                if (Convert.ToInt32(ckhString[2]) <= 20)
+                {
+                    returnString = "Pisces";
+                }
+                else
+                {
+                    returnString = "Aries";
+                }
+            }
+            else if (ckhString[1].ToString() == "April")
+            {
+                if (Convert.ToInt32(ckhString[2]) <= 19)
+                {
+                    returnString = "Aries";
+                }
+                else
+                {
+                    returnString = "Taurus";
+                }
+            }
+            return returnString;
+        }
+
+        public bool IsAdult
+        {
+            get
+            {
+                if (age(this.Dob) >= 18)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        public bool isBirthdayToday
+        {
+            get
+            {
+                if ((this.Dob.Day == DateTime.Now.Day) && (this.Dob.Month == DateTime.Now.Month))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+        public string GetSunSign
+        {
+            get
+            {
+                return (ZodiacSign(this.Dob));
+            }
         }
     }
-
-    public person(string first, string last, string email, DateTime dateofbirth)
+    class Program
     {
-        this.firstname = first;
-        this.lastname = last;
-
-        try
+        private String getAdultString(Person obj)
         {
-            this.email = email;
+            if (obj.IsAdult)
+            {
+                return obj.SetfirstName + " Is Adult";
+            }
+            else
+            {
+                return obj.SetfirstName + " Is not Adult";
+            }
         }
-        catch (Exception ex)
+        private String getBdayString(Person obj)
         {
+            if (obj.isBirthdayToday)
+            {
+                return "Today Is " + obj.SetfirstName + "'s B'day";
+            }
+            else
+            {
+                return "Today Is not " + obj.SetfirstName + "'s B'day";
+            }
+        }
+
+        private String getSunSignString(Person obj)
+        {
+            return obj.SetfirstName + "'s Sun sign is " + obj.GetSunSign;
+        }
+
+        static void Main(string[] args)
+        {
+            Person p = new Person("Test1", "Test1", new DateTime(1984, 10, 30));
+            Person p1 = new Person("Test2", "Test2", new DateTime(2010, 4, 30));
+            Program objProgram = new Program();
+
+            Console.WriteLine(objProgram.getAdultString(p));
+            Console.WriteLine(objProgram.getBdayString(p));
+            Console.WriteLine(objProgram.getSunSignString(p));
             Console.WriteLine();
-            Console.WriteLine(ex.Message);
+            Console.WriteLine(objProgram.getAdultString(p1));
+            Console.WriteLine(objProgram.getBdayString(p1));
+            Console.WriteLine(objProgram.getSunSignString(p1));
+            Console.ReadLine();
         }
-
-        try
-        {
-            this.dateofbirth = dateofbirth;
-        }
-        catch (ArgumentException ex)
-        {
-            Console.WriteLine();
-            Console.WriteLine(ex.Message);
-        }
-    }
-
-    public bool Adult
-    {
-        get
-        {
-            DateTime eighteen = _dateofbirth.AddYears(18);
-            if (DateTime.Today >= eighteen) return true;
-            return false;
-        }
-    }
-
-    public bool birthday
-    {
-        get
-        {
-            DateTime today = DateTime.Today;
-            if (today.Month == _dateofbirth.Month && today.Day == _dateofbirth.Day)
-            {
-                return true;
-            }
-            return false;
-        }
-    }
-}
-
-class Test
-{
-    static void Main()
-    {
-        Console.WriteLine("Enter details for a person\n");
-        Console.Write(" First name : ");
-        string first = Console.ReadLine();
-        Console.Write(" Last name : ");
-        string last = Console.ReadLine();
-        Console.Write(" Email address : ");
-        string email = Console.ReadLine();
-        Console.Write(" Date of birth : ");
-        string dob = Console.ReadLine();
-        DateTime dateofbirth = DateTime.Parse(dob);
-        person p = new person(first, last, email, dateofbirth);
-        Console.WriteLine();
-        Console.WriteLine("The person entered is : {0} {1}", p.firstname, p.lastname);
-        Console.WriteLine("Email address is: {0}", p.email);
-        Console.WriteLine("Date of birth is: {0}", p.dateofbirth.ToShortDateString());
-        Console.WriteLine("Adult : {0}", p.Adult);
-        Console.WriteLine("Birthday today : {0}", p.birthday);
-        Console.ReadKey();
     }
 }
